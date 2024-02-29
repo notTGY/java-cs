@@ -1,3 +1,4 @@
+package class_1;
 public class Main {
   public static void main(String[] args) {
     Item a = new Item(5);
@@ -11,7 +12,7 @@ public class Main {
     box2.add(c);
 
     box.add(box2);
-    //box2.add(box);
+    //box2.add(box); should throw
 
     System.out.println(box.getW());
   }

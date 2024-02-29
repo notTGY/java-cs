@@ -1,3 +1,4 @@
+package class_1;
 import java.util.*;
 
 public class Box extends Item {
@@ -6,6 +7,9 @@ public class Box extends Item {
     super(0);
   }
   public void add(Item item) {
+    if (item instanceof Box && ((Box)item).has(this)) {
+      throw new Error("Cyclic dependencies are forbidden");
+    }
     items.add(item);
   }
   public boolean has(Box box) {

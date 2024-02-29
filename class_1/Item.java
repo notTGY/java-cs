@@ -1,3 +1,4 @@
+package class_1;
 public class Item {
   private int weight;
 
