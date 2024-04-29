@@ -2,8 +2,12 @@ import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class Application {
     static int defaultSelectedColor = 3;
@@ -184,6 +188,24 @@ public class Application {
             }
         });
 
+
+        Template t = new Template();
+        MinimalHttpServer s = new MinimalHttpServer(){
+            @Override
+            public String getResponse() throws IOException {
+                String mapPath = "./map.json";
+                String mapStr = new String(Files.readAllBytes(Paths.get(mapPath)));
+
+                String tilePath = "./tiles.json";
+                String tileStr = new String(Files.readAllBytes(Paths.get(tilePath)));
+                return t.apply(tileStr, mapStr);
+            }
+        };
+        try {
+            s.startServer();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private static Tile transpose(Tile tile) {

@@ -14,8 +14,8 @@ class CanvasElement extends Canvas {
   private int[] hoverX = new int[]{-1};
   private int[] hoverY = new int[]{-1};
 
-  private int MW;
-  private int MH;
+//   private int MW;
+//   private int MH;
 
   private Tile[] tiles;
 
@@ -54,8 +54,8 @@ class CanvasElement extends Canvas {
   }
 
   public CanvasElement(int MW, int MH, int cellSize, Tile[] tiles, int[][] _grid) {
-      this.MW = MW;
-      this.MH = MH;
+    //   this.MW = MW;
+    //   this.MH = MH;
       this.tiles = tiles;
       this.cellSize = cellSize;
       this.grid = _grid.clone();

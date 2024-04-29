@@ -13,13 +13,15 @@ public class MapStorage {
       return;
     }
     int[] array = FileUtils.read1DFile(path);
+    
+
     int MW = Application.MW;
     int MH = Application.MH;
     grid = new int[MW][MH];
 
     for (int i = 0; i < MW; i++) {
       for (int j = 0; j < MH; j++) {
-        grid[i][j] = array[i + j * MH];
+        grid[i][j] = array[i + j * MW];
       }
     }
 
@@ -46,7 +48,7 @@ public class MapStorage {
 
     for (int i = 0; i < MW; i++) {
       for (int j = 0; j < MH; j++) {
-        array[i + j * MH] = newGrid[i][j];
+        array[i + j * MW] = newGrid[i][j];
       }
     }
   }
@@ -57,7 +59,7 @@ public class MapStorage {
     int[] array = new int[MW * MH];
     for (int i = 0; i < MW; i++) {
       for (int j = 0; j < MH; j++) {
-        array[i + j * MH] = grid[i][j];
+        array[i + j * MW] = grid[i][j];
       }
     }
     FileUtils.write1DFile(array, path);
