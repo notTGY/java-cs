@@ -8,6 +8,7 @@ import java.util.List;
 public class Application {
     static int defaultSelectedColor = 3;
     static int cellSize = 16;
+    static int batchSize = 4;
     static int MW = 10;
     static int MH = 9;
 

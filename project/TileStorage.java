@@ -4,20 +4,107 @@ public class TileStorage {
   Tile[] tiles;
 
   public TileStorage() {
-    // read all files from ./tiles
-    File folder = new File("./tiles");
-    File[] listOfFiles = folder.listFiles();
+    try {
+      fromFile();
+    } catch (Exception e) {
+      e.printStackTrace();
+      fallback();
+    }
+  }
 
-    tiles = new Tile[listOfFiles.length];
+  public void saveAll() {
+    toFile();
+  }
 
-    for (int i = 0; i < listOfFiles.length; i++) {
-      if (listOfFiles[i].isFile()) {
-        int[] array = FileUtils.read1DFile("./tiles/" + i + ".json");
-        tiles[i] = Tile.from1D(array);
+  // private void fromFiles() {
+  //   File folder = new File("./tiles");
+  //   File[] listOfFiles = folder.listFiles();
+
+  //   tiles = new Tile[listOfFiles.length];
+
+  //   for (int i = 0; i < listOfFiles.length; i++) {
+  //     if (listOfFiles[i].isFile()) {
+  //       int[] array = FileUtils.read1DFile("./tiles/" + i + ".json");
+  //       tiles[i] = Tile.from1D(array);
+  //     }
+  //   }
+  // }
+
+  // private void toFiles() {
+  //   for (int i = 0; i < tiles.length; i++) {
+  //     int[] array = tiles[i].to1D();
+  //     FileUtils.write1DFile(array, "./tiles/" + i + ".json");
+  //   }
+  // }
+
+  private void fromFile() {
+    int[] array = FileUtils.read1DFile("./tiles.json");
+    int len = array.length;
+
+    int cellSize = Application.cellSize;
+    int batchSize = Application.batchSize;
+    
+    int batches = len / (cellSize * cellSize);
+    int tilesLen = batchSize * batches;
+    Tile[] _tiles = new Tile[tilesLen];
+
+    for (int i = 0; i < batches; i++) {
+      int start = i * (cellSize * cellSize);
+      
+      for (int j = 0; j < batchSize; j++) {
+        int[][] data = new int[cellSize][cellSize];
+        for (int k = 0; k < cellSize; k++) {
+          for (int l = 0; l < cellSize; l++) {
+            int n = array[start + k * cellSize + l];
+            data[k][l] = (n >> (2*j)) % 4;
+          }
+        }
+        _tiles[i * batchSize + j] = Tile.fromData(data);
       }
     }
 
-    // fallback();
+    tiles = new Tile[tilesLen];
+    for (int i = 0; i < _tiles.length; i++) {
+      tiles[i] = _tiles[i];
+    }
+  }
+
+  private void toFile() {
+    int cellSize = Application.cellSize;
+    int batchSize = Application.batchSize;
+
+    int batches = tiles.length / batchSize;
+    if (tiles.length > batches * batchSize) {
+      batches += 1;
+    }
+
+
+    int[] array = new int[batches * cellSize * cellSize];
+
+    int[][] data = new int[cellSize][cellSize];
+    for (int i = 0, m = -1; i < tiles.length; i++) {
+      if (i % batchSize == 0) {
+        m += 1;
+        for (int j = 0; j < cellSize; j++) {
+          for (int k = 0; k < cellSize; k++) {
+            data[j][k] = 0;
+          }
+        }
+      }
+
+      for (int j = 0; j < cellSize; j++) {
+        for (int k = 0; k < cellSize; k++) {
+          data[j][k] += tiles[i].data[j][k] << 2*(i % batchSize);
+        }
+      }
+      for (int j = 0; j < cellSize; j++) {
+        for (int k = 0; k < cellSize; k++) {
+          array[m * cellSize * cellSize + j * cellSize + k] = data[j][k];
+        }
+      }
+    }
+
+    FileUtils.write1DFile(array, "./tiles.json");
   }
 
   private void fallback() {
@@ -48,15 +135,9 @@ public class TileStorage {
       Tile.from1D(redSprite),
     };
     // tiles = _tiles;
+    tiles = new Tile[_tiles.length];
     for (int i = 0; i < _tiles.length; i++) {
       tiles[i] = _tiles[i];
-    }
-  }
-
-  public void saveAll() {
-    for (int i = 0; i < tiles.length; i++) {
-      int[] array = tiles[i].to1D();
-      FileUtils.write1DFile(array, "./tiles/" + i + ".json");
     }
   }
 
