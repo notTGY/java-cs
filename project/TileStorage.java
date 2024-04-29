@@ -14,6 +14,15 @@ public class TileStorage {
     toFile();
   }
 
+  public void addNewTile() {
+    Tile[] newTiles = new Tile[tiles.length + 1];
+    for (int i = 0; i < tiles.length; i++) {
+      newTiles[i] = tiles[i];
+    }
+    newTiles[newTiles.length - 1] = new Tile(Application.cellSize);
+    tiles = newTiles;
+  }
+
   // private void fromFiles() {
   //   File folder = new File("./tiles");
   //   File[] listOfFiles = folder.listFiles();
@@ -140,7 +149,7 @@ public class TileStorage {
   }
 
   public void set(int i, Tile tile) {
-    System.out.println("grid changed");
+    // System.out.println("grid changed");
     tiles[i] = tile;
     // int[] array = tile.to1D();
     // FileUtils.write1DFile(array, "./tiles/" + i + ".json");

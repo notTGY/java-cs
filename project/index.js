@@ -131,7 +131,7 @@ iter = ({X, Y}) => {
   )
 }
 
-opaqueTiles = [2]
+opaqueTiles = [5, 6]
 
 manTile = 4
 m = d = 0

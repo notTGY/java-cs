@@ -115,11 +115,16 @@ public class Application {
                 tileCanvas.setGrid(transpose(ts.tiles[currentTileIndex[0]]).data);
             }
         });
+        Button newTileButton = new Button("New tile");
+        newTileButton.addActionListener(e -> {
+            ts.addNewTile();
+        });
 
         switchPanel.add(gameButton);
         switchPanel.add(tileButton);
         switchPanel.add(new Label("Tile Index:"));
         switchPanel.add(tileIndexSelector);
+        switchPanel.add(newTileButton);
 
 
         frame.add(switchPanel, BorderLayout.NORTH);
