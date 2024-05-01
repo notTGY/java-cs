@@ -44,7 +44,14 @@ class CanvasElement extends Canvas {
   }
 
   public void fullRepaint() {
-      updateGraphics(graphics, grid, tiles, cellSize, hoverX, hoverY);
+    graphics.setBackground(new Color(255, 0, 0)); // RGB value for red
+    graphics.clearRect(0, 0, grid.length * cellSize, grid[0].length * cellSize);    
+      for (int i = 0; i < grid.length; i++) {
+          for (int j = 0; j < grid[0].length; j++) {
+              int index = grid[i][j];
+              drawTile(graphics, i, j, tiles[index], cellSize);
+          }
+      }
       repaint();
   }
 
@@ -63,8 +70,7 @@ class CanvasElement extends Canvas {
       this.graphics = image.createGraphics();
 
       setSize(MW * cellSize, MH * cellSize);
-      updateGraphics(graphics, grid, tiles, cellSize, hoverX, hoverY);
-      repaint();
+      fullRepaint();
 
       addMouseListener(new MouseAdapter() {
           @Override
@@ -73,7 +79,7 @@ class CanvasElement extends Canvas {
               int y = e.getY() / cellSize;
               grid[x][y] = currentColorIndex;
               fireGridChangedEvent(grid);
-              updateGraphics(graphics, grid, tiles, cellSize, hoverX, hoverY);
+              updateGraphics(graphics, grid, tiles, cellSize, hoverX, hoverY, false);
               repaint();
           }
       });
@@ -84,9 +90,10 @@ class CanvasElement extends Canvas {
               int x = e.getX() / cellSize;
               int y = e.getY() / cellSize;
               if ((x!= hoverX[0] || y!= hoverY[0]) && (x < MW) && (y < MH)) {
+                  updateGraphics(graphics, grid, tiles, cellSize, hoverX, hoverY, false);
                   hoverX[0] = x;
                   hoverY[0] = y;
-                  updateGraphics(graphics, grid, tiles, cellSize, hoverX, hoverY);
+                  updateGraphics(graphics, grid, tiles, cellSize, hoverX, hoverY, true);
                   repaint();
               }
           }
@@ -98,17 +105,24 @@ class CanvasElement extends Canvas {
       g.drawImage(image, 0, 0, null);
   }
 
-  private void updateGraphics(Graphics2D graphics, int[][] grid, Tile[] tiles, int cellSize, int[] hoverX, int[] hoverY) {
+  private void updateGraphics(
+    Graphics2D graphics,
+    int[][] grid,
+    Tile[] tiles,
+    int cellSize,
+    int[] hoverX,
+    int[] hoverY,
+    boolean isHover
+    ) {
+    int x = hoverX[0];
+    int y = hoverY[0];
+    if (x == -1 || y == -1) return;
     graphics.setBackground(new Color(255, 0, 0)); // RGB value for red
-    graphics.clearRect(0, 0, grid.length * cellSize, grid[0].length * cellSize);    
-      for (int i = 0; i < grid.length; i++) {
-          for (int j = 0; j < grid[0].length; j++) {
-              int index = grid[i][j];
-              drawTile(graphics, i, j, tiles[index], cellSize);
-          }
-      }
+    graphics.clearRect(cellSize*x, cellSize*y, cellSize, cellSize);
+    int index = grid[x][y];
+    drawTile(graphics, x, y, tiles[index], cellSize);
 
-      if (hoverX[0]!= -1 && hoverY[0]!= -1) {
+      if (isHover && hoverX[0]!= -1 && hoverY[0]!= -1) {
           graphics.setColor(new Color(0.5f, 0.5f, 0.5f, 0.5f));
           graphics.fillRect(hoverX[0] * cellSize, hoverY[0] * cellSize, cellSize, cellSize);
       }

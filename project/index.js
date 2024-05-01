@@ -56,27 +56,73 @@ for (let I = 0; I < Math.ceil(additionalTiles.length) / 4; I++) {
 
 RawSpriteData = BasicSpriteData.concat(additionalSpriteData)
 
-loc2 = [1, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1, 3, 3, 3, 2, 2, 2, 2, 3, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 2, 3, 2, 2, 2, 2, 1, 1, 2, 2, 2, 3, 2, 2, 2, 2, 1, 1, 3, 2, 2, 2, 2, 2, 3, 2, 1, 1, 3, 2, 2, 2, 2, 2, 3, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+loc0=[1, 13, 17, 18, 20, 20, 19, 20, 19, 1, 1, 14, 16, 15, 5, 5, 5, 5, 6, 1, 1, 5, 5, 5, 5, 5, 5, 5, 5, 1, 1, 5, 5, 5, 5, 5, 5, 5, 5, 1, 1, 5, 5, 5, 11, 5, 5, 5, 5, 1, 1, 5, 5, 5, 12, 5, 5, 5, 5, 1, 1, 8, 5, 5, 5, 5, 5, 9, 5, 1, 1, 7, 5, 5, 5, 5, 5, 10, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+loc1=[1, 22, 22, 20, 19, 20, 19, 20, 19, 1, 1, 23, 23, 5, 11, 5, 5, 5, 21, 1, 1, 5, 5, 5, 5, 5, 5, 5, 5, 1, 1, 5, 5, 5, 5, 5, 5, 5, 5, 1, 1, 5, 5, 26, 24, 25, 26, 5, 5, 1, 1, 5, 5, 26, 16, 15, 26, 5, 5, 1, 1, 5, 5, 5, 5, 5, 5, 5, 5, 1, 1, 5, 5, 27, 27, 5, 5, 5, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+loc2=[1, 13, 17, 18, 20, 20, 19, 20, 19, 1, 1, 14, 16, 15, 5, 5, 5, 5, 6, 1, 1, 5, 5, 5, 5, 5, 5, 5, 5, 1, 1, 5, 5, 5, 5, 5, 5, 5, 5, 1, 1, 5, 5, 5, 11, 5, 5, 5, 5, 1, 1, 5, 5, 5, 12, 5, 5, 5, 5, 1, 1, 8, 5, 5, 5, 5, 5, 9, 5, 1, 1, 7, 5, 5, 5, 5, 5, 10, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 
 //---------- above - preprocessing
 
-locations = [
-  [
-    loc.reduce((acc, cur) => {
+locs = [loc0, loc1, loc2]
+MWs = [10, 10, 27]
+M = locs.map((loc, i) => loc.reduce((acc, cur) => {
       const last = acc[acc.length - 1]
-      if (last == null || last.length === 10) {
+      if (last == null || last.length === MWs[i]) {
         acc.push([])
       }
       acc[acc.length - 1].push(cur)
       return acc
     }, [])
-    , // M
-    10, // MW
-    0, // relX
-    -32, // relY
-  ]
+  )
+
+locations = [
+  {
+    M: M[0],
+    MW: MWs[0],
+    Ps: [{
+      to: 1,
+      x: 8,
+      y: 1,
+      tX: 8,
+      tY: 1,
+    }]
+  },
+  {
+    M: M[1],
+    MW: MWs[1],
+    Ps: [{
+      to: 0,
+      x: 8,
+      y: 1,
+      tX: 8,
+      tY: 1,
+    }, {
+      to: 2,
+      x: 3,
+      y: 7,
+      tX: 8,
+      tY: 8,
+    }, {
+      to: 2,
+      x: 4,
+      y: 7,
+      tX: 8,
+      tY: 8,
+    }]
+  },
+  {
+    M: M[2],
+    MW: MWs[2],
+    Ps: [{
+      to: 1,
+      x: 8,
+      y: 7,
+      tX: 3,
+      tY: 7,
+    }]
+  },
 ]
 
+opaqueTiles = [0, 3, 5, 6, 21, 26, 27, 30, 40]
 W = 160
 H = 144
 x = c.getContext`2d`
@@ -84,10 +130,16 @@ emptyFrame = Array.from({length: W*H*4 }, (_, i) => i%4 === 3 ? 255 : 0)
 
 N_IN_CHUNK = 4
 // 0 - transparent, 1 - black, 2 - gray, 3 - white
-palette = [
+solidPalette = [
+  [116, 42, 35, 255],
+  [0, 0, 0, 255],
+  [229, 155, 139, 255],
+  [255, 255, 255, 255]
+]
+transPalette = [
   [0, 0, 0, 0],
   [0, 0, 0, 255],
-  [170, 170, 170, 255],
+  [229, 155, 139, 255],
   [255, 255, 255, 255]
 ]
 flip = (arr) => {
@@ -97,7 +149,7 @@ flip = (arr) => {
   }
   return [].concat(...rows)
 }
-tile = (n) => {
+tile = (n, palette) => {
   absn = Math.abs(n)
   chunkI = absn % N_IN_CHUNK
   chunk = (absn - chunkI) / N_IN_CHUNK
@@ -109,15 +161,21 @@ tile = (n) => {
 }
 
 loadLocation = (i) => {
-  [M, MW, relX, relY] = locations[i]
+  console.log('loading location', i)
+  for (const key in locations[i]) {
+    window[key] = locations[i][key]
+  }
 }
 
 
-loadLocation(0)
+//loadLocation(0)
+loadLocation(1)
+relX = 0
+relY = -32
 
 // generates iterator with indexes of sprite at X, Y
 iter = ({X, Y}) => {
-  return Array.from(
+  I = Array.from(
     {length: 16*16 },
     (_, i) => {
       rx = i % 16
@@ -129,9 +187,11 @@ iter = ({X, Y}) => {
       return (fx + fy * W)*4
     }
   )
+  // do not render fully off screen
+  if (I.filter(i=>i!=-1).length === 0) return []
+  return I
 }
 
-opaqueTiles = [5, 6]
 
 manTile = 4
 m = d = 0
@@ -154,7 +214,19 @@ move = () => {
     } else {
       relY+=inc
     }
-    d--
+    d-=1
+    if (d==0) {
+      X = 4 - relX / 16
+      Y = 4 - relY / 16
+      //console.log('moved to', {X, Y})
+      Ps.map(({x, y, to, tX, tY}) => {
+        if (x === X && y === Y) {
+          loadLocation(to)
+          relX = 64 - tX*16
+          relY = 64 - tY*16
+        }
+      })
+    }
   }
 }
 paint = () => {
@@ -165,8 +237,10 @@ paint = () => {
     // O(MW)
     for (mX in row) {
       cell = row[mX]
-      T = tile(cell)
       I = iter({X: 16*(+mX)+relX, Y: 16*(+mY)+relY})
+      if (I.length) {
+        T = tile(cell, solidPalette)
+      }
       // O(16*16)
       for (i in I) {
         // O(4)
@@ -182,7 +256,7 @@ paint = () => {
   }
   // man
   I = iter({X: W / 2 - 16, Y: H / 2 - 8})
-  T = tile(manTile)
+  T = tile(manTile, transPalette)
   for (i in I) {
     // O(4)
     if (T[i][3]) {

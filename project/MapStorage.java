@@ -21,7 +21,12 @@ public class MapStorage {
 
     for (int i = 0; i < MW; i++) {
       for (int j = 0; j < MH; j++) {
-        grid[i][j] = array[i + j * MW];
+        int index = i + j * MW;
+        if (index < array.length) {
+          grid[i][j] = array[i + j * MW];
+        } else {
+          grid[i][j] = 0;
+        }
       }
     }
 

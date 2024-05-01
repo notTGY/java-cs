@@ -16,6 +16,6 @@ public class Template {
   public String apply(String tileStr, String mapStr) {
     return templ.replace(
       "//---------- above - preprocessing", 
-      "RawSpriteData=" + tileStr + '\n' + "loc=" + mapStr);
+      "RawSpriteData=" + tileStr + '\n' + "loc2=" + mapStr);
   }
 }
