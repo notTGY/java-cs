@@ -168,8 +168,7 @@ loadLocation = (i) => {
 }
 
 
-//loadLocation(0)
-loadLocation(1)
+loadLocation(0)
 relX = 0
 relY = -32
 
